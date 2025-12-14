@@ -1,0 +1,39 @@
+// eslint.config.js
+import js from '@eslint/js'
+import globals from 'globals'
+import reactHooks from 'eslint-plugin-react-hooks'
+import reactRefresh from 'eslint-plugin-react-refresh'
+import tseslint from 'typescript-eslint'
+import prettier from 'eslint-plugin-prettier' // ⭐ 추가
+import { defineConfig, globalIgnores } from 'eslint/config'
+
+export default defineConfig([
+  globalIgnores(['dist']),
+
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      js.configs.recommended,
+      ...tseslint.configs.recommended,
+      reactHooks.configs['recommended-latest'],
+      reactRefresh.configs.vite,
+    ],
+
+    languageOptions: {
+      ecmaVersion: 2020,
+      sourceType: 'module',
+      globals: globals.browser,
+    },
+
+    plugins: {
+      prettier,
+    },
+
+    rules: {
+      'prettier/prettier': 'warn',
+      'react-refresh/only-export-components': 'off',
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': 'error',
+    },
+  },
+])

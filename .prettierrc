@@ -1,0 +1,33 @@
+{
+  "_singleQuote_comment": "작은따옴표(single quote) 사용 여부 (true: ' ', false: \" \")",
+  "singleQuote": true,
+
+  "_semi_comment": "문장의 끝에 세미콜론(;)을 붙일지 여부 (true: 붙임, false: 생략)",
+  "semi": false,
+
+  "_trailingComma1_comment": "객체나 배열 마지막 요소 뒤에 쉼표(trailing comma)를 붙일지 여부",
+  "_trailingComma2_comment": "\"es5\" = ES5에서 허용되는 곳만 추가, \"all\" = 가능한 모든 곳에 추가",
+  "trailingComma": "all",
+
+  "_printWidth_comment": "한 줄 최대 글자 수. 초과하면 자동 줄바꿈",
+  "printWidth": 80,
+
+  "_tabWidth_comment": "들여쓰기 폭 (공백 수)",
+  "tabWidth": 2,
+
+  "_useTabs_comment": "탭 대신 공백 사용 여부 (true: 공백, false: 탭)",
+  "useTabs": false,
+
+  "_arrowParens1_comment": "화살표 함수에서 인자가 하나일 때 괄호 사용 여부",
+  "_arrowParens2_comment": "\"avoid\": 하나일 때 괄호 생략, \"always\": 항상 괄호 사용",
+  "arrowParens": "always",
+
+  "_bracketSpacing_comment": "객체 속성 정렬 시 key: value 간격 유지 여부",
+  "bracketSpacing": true,
+
+  "_htmlWhitespaceSensitivity_comment": "HTML/JSX에서 공백(줄바꿈/스페이스)을 얼마나 민감하게 처리할지",
+  "htmlWhitespaceSensitivity": "css",
+
+  "_endOfLine_comment": "코드 맨 끝에 개행 문자 추가 여부",
+  "endOfLine": "lf"
+}
