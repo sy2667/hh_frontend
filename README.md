@@ -1,4 +1,4 @@
-# KODC (Korea Oceanographic Data Center)
+# KODC (Korea Oceanographic Data Center)1
 
 국립수산과학원 한국해양자료센터 웹 애플리케이션 프로젝트입니다.
 
