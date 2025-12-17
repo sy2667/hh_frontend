@@ -29,3 +29,5 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/sy2667/hh-frontend:latest
+          build-args:
+            VITE_API_BASE_URL=https://api.glodpig.life
