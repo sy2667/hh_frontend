@@ -1,7 +1,7 @@
 import naverPng from '../assets/naver_button.png'
 
 const NAVER_CLIENT_ID = 'Z5vpmLl1zzBUciSrKTd9'
-const NAVER_CALLBACK_URL = 'http://localhost:5173/naver/callback'
+const NAVER_CALLBACK_URL = import.meta.env.VITE_NAVER_RETURN_URL
 
 const NaverLoginButton = () => {
   const handleClick = () => {
