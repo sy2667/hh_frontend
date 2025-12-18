@@ -5,6 +5,9 @@ const NAVER_CALLBACK_URL = import.meta.env.VITE_NAVER_RETURN_URL
 
 const NaverLoginButton = () => {
   const handleClick = () => {
+    console.log(NAVER_CLIENT_ID)
+    console.log(NAVER_CALLBACK_URL)
+
     const state =
       crypto.randomUUID?.() ?? Math.random().toString(36).substring(2)
 
