@@ -32,9 +32,7 @@ const NaverCallback = () => {
       window.location.origin,
     )
 
-    console.log(window.location.origin)
-
-    // window.close()
+    window.close()
   }, [])
 
   return <div>네이버 로그인 처리 중...</div>
