@@ -12,7 +12,7 @@ const Login = () => {
   const [password, setPassword] = useState('')
   const [emailError, setEmailError] = useState('')
   const [pwError, setPwError] = useState('')
-  const { loginSuccess, setLoginSuccess } = useAuth()
+  const { setLoginSuccess } = useAuth()
   const navigate = useNavigate()
   const setUser = useAuthStore((s) => s.setUser)
 
@@ -22,25 +22,18 @@ const Login = () => {
   const onLoginSuccess = useCallback(
     async (code: string, state: string) => {
       try {
-        const user = await loginWithNaver(code, state)
+        await loginWithNaver(code, state)
+        const user = await fetchMe()
         setUser(user)
         setLoginSuccess(true)
+        navigate('/calendar/day')
       } catch (err) {
         console.error('네이버 로그인 실패', err)
         naverLoggingRef.current = false
       }
     },
-    [setUser, setLoginSuccess],
+    [setUser, setLoginSuccess, navigate],
   )
-
-  const loadMe = async () => {
-    try {
-      const user = await fetchMe()
-      console.log(user)
-    } catch (e) {
-      console.error('유저조회 실패', e)
-    }
-  }
 
   useEffect(() => {
     const temp = async (e: MessageEvent) => {
@@ -64,14 +57,7 @@ const Login = () => {
 
     window.addEventListener('message', temp)
     return () => window.removeEventListener('message', temp)
-  }, [onLoginSuccess])
-
-  useEffect(() => {
-    if (!loginSuccess) {
-      loadMe().catch(console.error)
-      navigate('/calendar/day')
-    }
-  }, [loginSuccess, navigate])
+  }, [onLoginSuccess, APP_ORIGIN])
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault()
