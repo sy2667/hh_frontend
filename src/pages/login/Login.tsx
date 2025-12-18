@@ -37,7 +37,8 @@ const Login = () => {
     const temp = async (e: MessageEvent) => {
       console.log('오리진 이전')
       if (e.origin !== APP_ORIGIN) return
-      console.log('오리진 이후')
+      console.log(`${APP_ORIGIN} 오리진 이후`)
+      console.log(`${e.origin} 오리진 이후`)
       if (e.data?.provider !== 'NAVER') return
 
       if (naverLoggingRef.current) return
