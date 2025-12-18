@@ -1,6 +1,6 @@
 import naverPng from '../assets/naver_button.png'
 
-const NAVER_CLIENT_ID = 'Z5vpmLl1zzBUciSrKTd9'
+const NAVER_CLIENT_ID = import.meta.env.VITE_NAVER_CLIENT_ID
 const NAVER_CALLBACK_URL = import.meta.env.VITE_NAVER_RETURN_URL
 
 const NaverLoginButton = () => {

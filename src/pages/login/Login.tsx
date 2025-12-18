@@ -17,6 +17,7 @@ const Login = () => {
   const setUser = useAuthStore((s) => s.setUser)
 
   const naverLoggingRef = useRef(false)
+  const APP_ORIGIN = import.meta.env.VITE_APP_ORIGIN
 
   const onLoginSuccess = useCallback(
     async (code: string, state: string) => {
@@ -34,7 +35,7 @@ const Login = () => {
 
   useEffect(() => {
     const temp = async (e: MessageEvent) => {
-      if (e.origin !== 'http://localhost:5173') return
+      if (e.origin !== APP_ORIGIN) return
       if (e.data?.provider !== 'NAVER') return
 
       if (naverLoggingRef.current) return
