@@ -35,7 +35,8 @@ const Login = () => {
 
   useEffect(() => {
     const temp = async (e: MessageEvent) => {
-      console.log('오리진 이전')
+      console.log(`${APP_ORIGIN} 오리진 전`)
+      console.log(`${e.origin} 오리진 전`)
       if (e.origin !== APP_ORIGIN) return
       console.log(`${APP_ORIGIN} 오리진 이후`)
       console.log(`${e.origin} 오리진 이후`)
