@@ -32,3 +32,4 @@ jobs:
           build-args:
             VITE_API_BASE_URL=https://api.glodpig.life
             VITE_NAVER_CLIENT_ID=${{ secrets.VITE_NAVER_CLIENT_ID }}
+            VITE_NAVER_RETURN_URL=${{ secrets.VITE_NAVER_RETURN_URL }}
