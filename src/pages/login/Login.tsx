@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useAuth } from '../../contexts/AuthContext.tsx'
 import NaverLoginButton from '@components/NaverLoginButton.tsx'
 import { useNavigate } from 'react-router-dom'
-import { loginWithNaver } from '@api/user/user'
+import { loginWithNaver, fetchMe } from '@api/user/user'
 import { useAuthStore } from '@hooks/common/useAuthStore'
 
 const Login = () => {
@@ -33,6 +33,15 @@ const Login = () => {
     [setUser, setLoginSuccess],
   )
 
+  const loadMe = async () => {
+    try {
+      const user = await fetchMe()
+      console.log(user)
+    } catch (e) {
+      console.error('유저조회 실패', e)
+    }
+  }
+
   useEffect(() => {
     const temp = async (e: MessageEvent) => {
       if (e.origin !== APP_ORIGIN) return
@@ -58,7 +67,10 @@ const Login = () => {
   }, [onLoginSuccess])
 
   useEffect(() => {
-    if (loginSuccess) navigate('/calendar/day')
+    if (!loginSuccess) {
+      loadMe().catch(console.error)
+      navigate('/calendar/day')
+    }
   }, [loginSuccess, navigate])
 
   const submit = (e: React.FormEvent) => {
