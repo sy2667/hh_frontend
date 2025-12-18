@@ -29,7 +29,7 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/sy2667/hh-frontend:latest
-          build-args:
-            VITE_API_BASE_URL=https://api.glodpig.life
+          build-args: |
+            VITE_API_BASE_URL=https://api.glodpig.life/api
             VITE_NAVER_CLIENT_ID=${{ secrets.VITE_NAVER_CLIENT_ID }}
             VITE_NAVER_RETURN_URL=${{ secrets.VITE_NAVER_RETURN_URL }}

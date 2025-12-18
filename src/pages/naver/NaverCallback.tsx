@@ -29,7 +29,7 @@ const NaverCallback = () => {
 
     window.opener?.postMessage(
       { provider: 'NAVER', code, state },
-      'http://localhost:5173',
+      window.location.origin,
     )
 
     window.close()
