@@ -1,7 +1,9 @@
 // src/pages/calendar/Day.tsx
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Calendar from '@components/Calendar'
 import CustomButton from '@components/CustomButton'
+import { searchTransactionToMonth } from '@api/transaction/transaction'
+import type { TransactionListRes } from '@/types/transactionType.ts'
 
 const Day = () => {
   const [month, setMonth] = useState(() => {
@@ -9,8 +11,36 @@ const Day = () => {
     return new Date(today.getFullYear(), today.getMonth(), 1)
   })
 
-  // 2) 선택된 날짜 상태 (초기값: 오늘)
-  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date())
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date())
+
+  const pad2 = (n: number) => String(n).padStart(2, '0')
+  const toYmd = (d: Date) =>
+    `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`
+
+  const getMonthRangeFromMonth = (m: Date) => {
+    const y = m.getFullYear()
+    const mIdx = m.getMonth()
+    const start = new Date(y, mIdx, 1)
+    const end = new Date(y, mIdx + 1, 0)
+    return { start: toYmd(start), end: toYmd(end) }
+  }
+
+  useEffect(() => {
+    const callData = async () => {
+      try {
+        const { start, end } = getMonthRangeFromMonth(selectedDate)
+        const res: TransactionListRes = await searchTransactionToMonth(
+          start,
+          end,
+        )
+        console.log(res)
+      } catch (e) {
+        console.error('조회 에러', e)
+      }
+    }
+
+    callData()
+  }, [month])
 
   return (
     <div className="space-y-4">
@@ -19,6 +49,7 @@ const Day = () => {
         selectedDate={selectedDate}
         onChangeMonth={(nextMonth) => {
           setMonth(nextMonth)
+          setSelectedDate(nextMonth)
         }}
         onSelectDate={(date) => {
           setSelectedDate(date)

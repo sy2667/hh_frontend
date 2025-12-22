@@ -1,5 +1,5 @@
 import { api } from '../client'
-import type { UserRes } from '@/types/userType.ts'
+import type { UserRes } from '@app-types/userType.ts'
 
 export const loginWithNaver = async (code: string, state: string) => {
   const res = await api.post<UserRes>('/users/login/naver', {
