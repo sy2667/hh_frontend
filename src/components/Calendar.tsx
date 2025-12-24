@@ -1,10 +1,12 @@
 import React from 'react'
+import type { monthTrType } from '@/types/transactionType.ts'
 
 type CalendarProps = {
   month: Date
   selectedDate: Date | null
   onChangeMonth: (nextMonth: Date) => void
   onSelectDate: (date: Date) => void
+  dayMap: Record<string, monthTrType>
 }
 
 function getDaysInMonth(year: number, month: number) {
@@ -31,6 +33,7 @@ const Calendar: React.FC<CalendarProps> = ({
   selectedDate,
   onChangeMonth,
   onSelectDate,
+  dayMap,
 }) => {
   const year = month.getFullYear()
   const monthIndex = month.getMonth()
@@ -116,6 +119,11 @@ const Calendar: React.FC<CalendarProps> = ({
             const cellDate = new Date(year, monthIndex, day)
             const isSelected = isValidateDate(cellDate, selectedDate)
 
+            const mm = String(monthIndex + 1).padStart(2, '0')
+            const dd = String(day).padStart(2, '0')
+            const dayKey = `${year}-${mm}-${dd}`
+            const summary = dayMap[dayKey]
+
             return (
               <button
                 key={`${weekIndex}-${dayIndex}`}
@@ -136,10 +144,10 @@ const Calendar: React.FC<CalendarProps> = ({
                 <span className="text-sm font-medium mb-1">{day}</span>
                 {/* 금액 (예시는 0원) */}
                 <span className="text-[10px] text-blue-500 leading-none break-all max-w-full overflow-hidden">
-                  5,000
+                  {summary ? summary.income.toLocaleString() : ''}
                 </span>
                 <span className="text-[10px] text-red-500 leading-none break-all max-w-full overflow-hidden">
-                  -10,000
+                  {summary ? summary.expense.toLocaleString() : ''}
                 </span>
               </button>
             )

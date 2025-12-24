@@ -9,3 +9,8 @@ export interface LoginResponse {
   data: UserRes
   message?: string
 }
+
+export interface LoginForm {
+  email: string
+  password: string
+}

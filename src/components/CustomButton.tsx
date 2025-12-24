@@ -2,10 +2,12 @@
 import React from 'react'
 
 type ButtonType = 'init' | 'delete' | 'edit'
+type HtmlButtonType = 'button' | 'submit' | 'reset'
 
 interface CustomButtonProp {
   buttonType: ButtonType
-  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
+  htmlType?: HtmlButtonType
   children?: React.ReactNode
 }
 
@@ -24,6 +26,7 @@ const typeLabelMap: Record<ButtonType, string> = {
 const CustomButton: React.FC<CustomButtonProp> = ({
   buttonType,
   onClick,
+  htmlType = 'button',
   children,
 }) => {
   const colorClass = typeClassMap[buttonType]
@@ -31,8 +34,8 @@ const CustomButton: React.FC<CustomButtonProp> = ({
 
   return (
     <button
-      type="button"
       onClick={onClick}
+      type={htmlType}
       className={`
         inline-flex items-center justify-center m-1
         px-4 py-2 rounded-md text-sm font-medium
