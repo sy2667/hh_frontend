@@ -32,9 +32,6 @@ const Pages = () => {
         }
       />
 
-      {/* 차트 섹션 */}
-      {/*<Route path="/chart/*" element={<ChartPages />} />*/}
-
       {/* 알 수 없는 경로 → 캘린더 일별로 */}
       <Route
         path="*"

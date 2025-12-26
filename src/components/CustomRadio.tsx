@@ -9,7 +9,8 @@ type CustomRadioProps = {
   name: string
   value: string
   options: RadioOption[]
-  direction?: 'row' | 'col' // 라디오 배치
+  direction?: 'row' | 'col'
+  onChange: (value: string) => void
 }
 
 const CustomRadioGroup: React.FC<CustomRadioProps> = ({
@@ -18,6 +19,7 @@ const CustomRadioGroup: React.FC<CustomRadioProps> = ({
   value,
   options,
   direction = 'row',
+  onChange,
 }) => {
   const baseItemClass = `
     flex items-center gap-2
@@ -56,6 +58,7 @@ const CustomRadioGroup: React.FC<CustomRadioProps> = ({
                 value={opt.value}
                 checked={isChecked}
                 className="sr-only"
+                onChange={() => onChange(opt.value)}
               />
 
               <span

@@ -1,10 +1,10 @@
 import CustomInput from '@components/CustomInput'
 import CustomButton from '@components/CustomButton'
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef, useCallback } from 'react'
 import { useAuth } from '../../contexts/AuthContext.tsx'
 import NaverLoginButton from '@components/NaverLoginButton.tsx'
 import { useNavigate } from 'react-router-dom'
-import { loginWithNaver, fetchMe } from '@api/user/user'
+import { loginWithNaver, fetchMe, loginWithHome } from '@api/user/user'
 import { useAuthStore } from '@hooks/common/useAuthStore'
 import { type LoginForm } from '@app-types/userType'
 import { useForm } from 'react-hook-form'
@@ -66,34 +66,45 @@ const Login = () => {
     return () => window.removeEventListener('message', temp)
   }, [onLoginSuccess, APP_ORIGIN])
 
-  const submit = (data: LoginForm) => {
+  const submit = async (data: LoginForm) => {
     if (data.email === 'admin' && data.password === 'admin') {
       setLoginSuccess(true)
+    } else {
+      const loginForm: LoginForm = {
+        email: data.email,
+        password: data.password,
+      }
+      await loginWithHome(loginForm)
+
+      const user = await fetchMe()
+      setUser(user)
+      setLoginSuccess(true)
+      navigate('/calendar/day')
     }
   }
 
   return (
     <div className="space-y-4">
       <div className="mt-4">
-        <form>
+        <form onSubmit={handleSubmit(submit)}>
           <div className="grid grid-flow-row-dense grid-cols-3 grid-rows-2 gap-y-4">
             <div className="flex items-center justify-center">이메일</div>
-            <div className="col-span-2 ">
+            <div className="col-span-2">
               <CustomInput
                 label=""
                 type="email"
                 placeholder="email@example.com"
-                {...register('email', {
-                  required: '이메일을 입력해주세요.',
-                })}
+                {...register('email', { required: '이메일을 입력해주세요.' })}
                 error={errors.email?.message}
               />
             </div>
+
             <div className="flex items-center justify-center">비밀번호</div>
             <div className="col-span-2">
               <CustomInput
                 label=""
                 type="password"
+                placeholder="password"
                 {...register('password', {
                   required: '비밀번호를 입력해주세요.',
                 })}
@@ -101,17 +112,26 @@ const Login = () => {
               />
             </div>
           </div>
+
+          <div className="pt-2 flex justify-end gap-2">
+            <CustomButton
+              buttonType="init"
+              htmlType="button"
+              onClick={() => navigate('/login/signup')}
+            >
+              회원가입
+            </CustomButton>
+            <CustomButton buttonType="init" htmlType="submit">
+              로그인
+            </CustomButton>
+          </div>
         </form>
+
         <div className="text-sm text-gray-600 mb-2 mt-6">
           소셜 계정으로 로그인
         </div>
         <div className="grid grid-cols-4 mt-10 place-items-center">
           <NaverLoginButton />
-        </div>
-        <div className="pt-2 flex justify-end gap-2">
-          <CustomButton buttonType="init" htmlType={'submit'}>
-            로그인
-          </CustomButton>
         </div>
       </div>
     </div>

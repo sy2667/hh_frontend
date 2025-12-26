@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import CustomInput from '@components/CustomInput.tsx'
 import CustomRadio from '@components/CustomRadio.tsx'
+import CustomButton from '@components/CustomButton'
 import { defaultValues, type TransactionForm } from '@app-types/transactionType'
 import { useForm } from 'react-hook-form'
 
@@ -55,7 +56,7 @@ export default function Modal({ isOpen, onClose, isMode }: ModalProps) {
               <div className="text-sm text-gray-500">
                 <CustomInput
                   label="내용"
-                  type="description"
+                  type="text"
                   placeholder="ex) 카페, 외식"
                   {...register('description', {
                     required: '내용을 입력해주세요',
@@ -63,34 +64,31 @@ export default function Modal({ isOpen, onClose, isMode }: ModalProps) {
                   error={errors.description?.message}
                 />
 
-                <CustomRadio
-                  label={'수입/지출'}
+                {/*<CustomRadio
+                  label={''}
                   name={'transaction_type'}
                   value={'1'}
                   options={[
                     { value: '1', label: '수입' },
                     { value: '2', label: '지출' },
                   ]}
-                />
-
+                />*/}
                 <CustomInput
-                  label={'금액'}
-                  name={'amount'}
-                  type={'text'}
-                  value={''}
-                  onChange={() => console.log('금액 입력중')}
-                  placeholder={'ex) 5000, 40000'}
-                  disabled={false}
-                  error={''}
+                  label="금액"
+                  type="text"
+                  inputMode="numeric"
+                  placeholder="ex) 5000, 40000"
+                  {...register('amount', {
+                    required: '금액을 입력해주세요.',
+                    onChange: (e) => {
+                      e.target.value = e.target.value.replace(/[^0-9]/g, '')
+                    },
+                  })}
+                  error={errors.amount?.message}
                 />
               </div>
             )}
-
-            {isMode === 'update' && (
-              <div className="text-sm text-gray-500">
-                기존 내역을 수정합니다.
-              </div>
-            )}
+            <CustomButton buttonType="init" htmlType="submit" />
           </form>
         </div>
       </div>

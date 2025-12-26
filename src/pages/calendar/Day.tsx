@@ -107,7 +107,6 @@ const Day = () => {
       </div>
       <Modal
         isOpen={isModalOpen}
-        title={'수입/지출'}
         isMode={modalMode}
         onClose={() => setIsModalOpen(false)}
       />
