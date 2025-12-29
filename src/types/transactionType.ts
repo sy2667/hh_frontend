@@ -1,8 +1,9 @@
 export interface TransactionForm {
   categoryPk: number
   transactionType: string
-  amount: number
+  amount: string
   description: string
+  transactionDate: string
 }
 export interface TransactionRes {
   transactionPk: number
@@ -30,6 +31,7 @@ export interface monthTrType {
 export const defaultValues: TransactionForm = {
   categoryPk: 1,
   transactionType: '1',
-  amount: 0,
+  amount: '0',
   description: '',
+  transactionDate: '',
 }

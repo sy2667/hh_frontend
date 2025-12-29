@@ -1,91 +1,71 @@
 import React from 'react'
+import {
+  Controller,
+  type Control,
+  type FieldValues,
+  type Path,
+  type RegisterOptions,
+} from 'react-hook-form'
+import { Radio, Group } from '@mantine/core'
 
 export type RadioOption = {
   value: string
   label: string
 }
-type CustomRadioProps = {
-  label: string
-  name: string
-  value: string
+
+type CustomRadioGroupProps<T extends FieldValues> = {
+  label?: string
+  name: Path<T>
+  control: Control<T>
   options: RadioOption[]
-  direction?: 'row' | 'col'
-  onChange: (value: string) => void
+  rules?: RegisterOptions<T, Path<T>>
+  onChange?: (value: string) => void
 }
 
-const CustomRadioGroup: React.FC<CustomRadioProps> = ({
+export function CustomRadioGroup<T extends FieldValues>({
   label,
   name,
-  value,
+  control,
   options,
-  direction = 'row',
+  rules,
   onChange,
-}) => {
-  const baseItemClass = `
-    flex items-center gap-2
-    rounded-md border px-3 py-2
-    text-sm
-    bg-gray-50 dark:bg-gray-700
-    transition
-  `
-
-  const wrapperClass =
-    direction === 'row' ? 'flex flex-wrap gap-2' : 'flex flex-col gap-2'
-
+}: CustomRadioGroupProps<T>) {
   return (
-    <div className="w-full">
-      {label && (
-        <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">
-          {label}
-        </label>
-      )}
+    <Controller
+      name={name}
+      control={control}
+      rules={rules}
+      render={({ field, fieldState }) => (
+        <div className="flex items-start gap-3 m-2 min-h-10">
+          {label && (
+            <div className="w-24 shrink-0 pt-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+              {label}
+            </div>
+          )}
 
-      <div className={wrapperClass} role="radiogroup" aria-label={label}>
-        {options.map((opt) => {
-          const isChecked = opt.value === value
-
-          return (
-            <label
-              key={opt.value}
-              className={`
-                ${baseItemClass}
-                ${isChecked ? 'ring-2 ring-blue-500 border-blue-500' : ''}
-              `}
+          <div className="flex-1 min-h-10 flex items-center">
+            <Radio.Group
+              value={field.value}
+              onChange={(val) => {
+                field.onChange(val)
+                onChange?.(val)
+              }}
             >
-              <input
-                type="radio"
-                name={name}
-                value={opt.value}
-                checked={isChecked}
-                className="sr-only"
-                onChange={() => onChange(opt.value)}
-              />
+              <Group gap="md" wrap="wrap">
+                {options.map((opt) => (
+                  <Radio key={opt.value} value={opt.value} label={opt.label} />
+                ))}
+              </Group>
+            </Radio.Group>
+          </div>
 
-              <span
-                aria-hidden="true"
-                className={`
-                  flex h-4 w-4 items-center justify-center
-                  rounded-full border
-                  ${isChecked ? 'border-blue-600' : 'border-gray-400 dark:border-gray-300'}
-                `}
-              >
-                <span
-                  className={`
-                    h-2 w-2 rounded-full
-                    ${isChecked ? 'bg-blue-600' : 'bg-transparent'}
-                  `}
-                />
-              </span>
-
-              <span className="text-gray-800 dark:text-gray-100">
-                {opt.label}
-              </span>
-            </label>
-          )
-        })}
-      </div>
-    </div>
+          {fieldState.error && (
+            <p className="mt-1 text-xs text-red-500">
+              {fieldState.error.message}
+            </p>
+          )}
+        </div>
+      )}
+    />
   )
 }
-
-export default CustomRadioGroup

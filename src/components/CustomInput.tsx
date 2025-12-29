@@ -28,12 +28,9 @@ const CustomInput = React.forwardRef<HTMLInputElement, CustomInputProps>(
     `
 
     return (
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-3 m-2">
         {label && (
-          <label
-            htmlFor={rest.name}
-            className="w-24 shrink-0 pt-2 text-sm font-medium text-gray-700 dark:text-gray-200"
-          >
+          <label className="w-24 shrink-0 pt-2 text-sm font-medium text-gray-700 dark:text-gray-200 justify-center">
             {label}
           </label>
         )}
