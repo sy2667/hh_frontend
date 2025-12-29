@@ -1,7 +1,6 @@
 // src/pages/calendar/Day.tsx
 import { useState, useEffect, useCallback } from 'react'
 import Calendar from '@components/Calendar'
-import CustomButton from '@components/CustomButton'
 import { searchTransactionToMonth } from '@api/transaction/transaction'
 import type {
   TransactionListRes,
