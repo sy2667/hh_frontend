@@ -1,7 +1,7 @@
 export interface UserRes {
   userPk: number
   email?: string
-  nickname: string
+  nickName: string
 }
 
 export interface LoginResponse {

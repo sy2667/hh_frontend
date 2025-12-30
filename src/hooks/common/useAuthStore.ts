@@ -17,7 +17,7 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'auth-storage',
-      partialize: (state) => ({ user: state.user }), // user만 저장
+      partialize: (state) => ({ user: state.user }),
     },
   ),
 )

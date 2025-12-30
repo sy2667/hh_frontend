@@ -22,6 +22,9 @@ const Navigation = () => {
     }
   }
 
+  const user = useAuthStore((s) => s.user)
+  const nickname = user?.nickName
+
   return (
     <nav
       className="
@@ -53,12 +56,20 @@ const Navigation = () => {
             </li>
           ))}
         </ul>
-        <CustomButton
-          buttonType={loginSuccess ? 'delete' : 'init'}
-          onClick={authClick}
-        >
-          {loginSuccess ? '로그아웃' : '로그인'}
-        </CustomButton>
+        <div>
+          {loginSuccess && nickname && (
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              {nickname} 님!
+            </span>
+          )}
+
+          <CustomButton
+            buttonType={loginSuccess ? 'delete' : 'init'}
+            onClick={authClick}
+          >
+            {loginSuccess ? '로그아웃' : '로그인'}
+          </CustomButton>
+        </div>
       </div>
     </nav>
   )

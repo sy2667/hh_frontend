@@ -14,7 +14,5 @@ export const getCategory = async (categoryType: string) => {
     },
   })
 
-  //console.log(res.data)
-
   return res.data
 }
