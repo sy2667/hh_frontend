@@ -45,7 +45,7 @@ export function CustomRadioGroup<T extends FieldValues>({
 
           <div className="flex-1 min-h-10 flex items-center">
             <Radio.Group
-              value={field.value}
+              value={field.value == null ? '' : String(field.value)}
               onChange={(val) => {
                 field.onChange(val)
                 onChange?.(val)

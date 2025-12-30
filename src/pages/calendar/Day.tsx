@@ -22,6 +22,7 @@ const Day = () => {
   const [transactions, setTransactions] = useState<
     TransactionListRes['transactions']
   >([])
+  const [selectedTrPk, setSelectedTrPk] = useState<string>('')
 
   const pad2 = (num: number) => String(num).padStart(2, '0')
   const toYmd = (date: Date) =>
@@ -123,6 +124,7 @@ const Day = () => {
                 onClick={() => {
                   setModalMode('init')
                   setIsModalOpen(true)
+                  setSelectedTrPk('')
                 }}
               >
                 + 입력
@@ -190,6 +192,12 @@ const Day = () => {
                     <li
                       key={tr.transactionPk}
                       className="flex items-center justify-between rounded-xl bg-white p-3 ring-1 ring-gray-200 hover:bg-gray-50"
+                      tabIndex={0}
+                      onClick={() => {
+                        setSelectedTrPk(String(tr.transactionPk))
+                        setModalMode('update')
+                        setIsModalOpen(true)
+                      }}
                     >
                       <div className="flex items-center gap-3">
                         <span
@@ -224,8 +232,12 @@ const Day = () => {
         date={fullDate}
         isOpen={isModalOpen}
         isMode={modalMode}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          setIsModalOpen(false)
+          setSelectedTrPk('')
+        }}
         onSuccess={callData}
+        trPk={selectedTrPk}
       />
     </div>
   )

@@ -1,7 +1,7 @@
 // src/components/common/CommonButton.tsx
 import React from 'react'
 
-type ButtonType = 'init' | 'delete' | 'edit'
+type ButtonType = 'init' | 'delete' | 'edit' | 'modify'
 type HtmlButtonType = 'button' | 'submit' | 'reset'
 
 interface CustomButtonProp {
@@ -15,12 +15,14 @@ const typeClassMap: Record<ButtonType, string> = {
   init: 'bg-blue-400 hover:bg-blue-600 text-white',
   delete: 'bg-red-400 hover:bg-red-600 text-white',
   edit: 'bg-yellow-400 hover:bg-yellow-500 text-gray-900',
+  modify: 'bg-gray-400 hover:bg-gray-500 text-white',
 }
 
 const typeLabelMap: Record<ButtonType, string> = {
   init: '입력',
   delete: '삭제',
   edit: '수정',
+  modify: '취소',
 }
 
 const CustomButton: React.FC<CustomButtonProp> = ({

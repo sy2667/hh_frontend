@@ -3,10 +3,19 @@ import CustomInput from '@components/CustomInput'
 import { CustomRadioGroup } from '@components/CustomRadio'
 import { CustomSelect } from '@components/CustomSelect'
 import CustomButton from '@components/CustomButton'
-import { defaultValues, type TransactionForm } from '@app-types/transactionType'
+import {
+  defaultValues,
+  type TransactionForm,
+  type TransactionRes,
+} from '@app-types/transactionType'
 import { useForm } from 'react-hook-form'
 import { getCategory } from '@api/category/category'
-import { createTransaction } from '@api/transaction/transaction'
+import {
+  createTransaction,
+  getTransaction,
+  updateTransaction,
+  deleteTransaction,
+} from '@api/transaction/transaction'
 import type { CategoryReq } from '@/types/CategoryType.ts'
 
 type ModalMode = 'init' | 'update'
@@ -16,6 +25,7 @@ type ModalProps = {
   onClose: () => void
   isMode: ModalMode
   onSuccess: () => void
+  trPk?: string
 }
 
 export default function Modal({
@@ -24,6 +34,7 @@ export default function Modal({
   onClose,
   isMode,
   onSuccess,
+  trPk,
 }: ModalProps) {
   const mode = isMode === 'init' ? '입력' : '수정'
   const [selectType, setSelectType] = useState<string>('1')
@@ -59,22 +70,37 @@ export default function Modal({
   useEffect(() => {
     if (!isOpen) return
 
+    if (isMode === 'init') {
+      reset({
+        ...defaultValues,
+        transactionDate: date,
+      })
+      setSelectType('1') // 기본 수입
+      return
+    }
+
+    if (!trPk) return
+
     const run = async () => {
       try {
-        const data = await getCategory(selectType)
+        const tr: TransactionRes = await getTransaction(trPk)
 
-        const opts = data.map((c: CategoryReq) => ({
-          value: String(c.categoryPk),
-          label: c.categoryName,
-        }))
-        setCategoryOptions(opts)
+        setSelectType(String(tr.transactionType))
+
+        reset({
+          categoryPk: String(tr.categoryPk),
+          transactionType: String(tr.transactionType),
+          amount: tr.amount,
+          description: tr.description ?? '',
+          transactionDate: tr.transactionDate?.slice(0, 10) ?? date,
+        })
       } catch (e) {
-        console.error(e)
+        console.error('거래 조회 실패', e)
       }
     }
 
     void run()
-  }, [isOpen, selectType])
+  }, [isOpen, isMode, trPk, reset, date])
 
   useEffect(() => {
     if (!isOpen) return
@@ -86,6 +112,22 @@ export default function Modal({
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [isOpen, onClose, reset])
+
+  useEffect(() => {
+    const run = async () => {
+      try {
+        const category = await getCategory(selectType)
+        const opts = category.map((c: CategoryReq) => ({
+          value: String(c.categoryPk),
+          label: c.categoryName,
+        }))
+        setCategoryOptions(opts)
+      } catch (e) {
+        console.error('거래 조회 실패', e)
+      }
+    }
+    void run()
+  }, [selectType])
 
   if (!isOpen) {
     return null
@@ -105,10 +147,30 @@ export default function Modal({
 
   const onSubmit = async (form: TransactionForm) => {
     try {
-      form.transactionDate = date
-      console.log(form)
-      await createTransaction(form)
+      const modalForm = {
+        ...form,
+        transactionDate: date,
+      }
 
+      if (isMode === 'init') {
+        await createTransaction(modalForm)
+      } else {
+        if (!trPk) return
+        await updateTransaction(trPk, modalForm)
+      }
+
+      reset(defaultValues)
+      onSuccess()
+      onClose()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  const onDelete = async () => {
+    if (!trPk) return
+    try {
+      await deleteTransaction(trPk)
       reset(defaultValues)
       onSuccess()
       onClose()
@@ -128,73 +190,84 @@ export default function Modal({
             <button onClick={onClose}>✕</button>
           </div>
           <form onSubmit={handleSubmit(onSubmit)}>
-            {isMode === 'init' && (
-              <div className="text-sm text-gray-500">
-                <CustomInput
-                  label="내용"
-                  type="text"
-                  placeholder="ex) 카페, 외식"
-                  {...register('description', {
-                    required: '내용을 입력해주세요',
-                  })}
-                  error={errors.description?.message}
-                />
+            <div className="text-sm text-gray-500">
+              <CustomInput
+                label="내용"
+                type="text"
+                placeholder="ex) 카페, 외식"
+                {...register('description', {
+                  required: '내용을 입력해주세요',
+                })}
+                error={errors.description?.message}
+              />
 
-                <CustomRadioGroup<TransactionForm>
-                  label="구분"
-                  name="transactionType"
-                  control={control}
-                  options={[
-                    { value: '1', label: '수입' },
-                    { value: '2', label: '지출' },
-                  ]}
-                  rules={{ required: '구분을 선택해주세요.' }}
-                  onChange={(val) => {
-                    setSelectType(val)
-                  }}
-                />
+              <CustomRadioGroup<TransactionForm>
+                label="구분"
+                name="transactionType"
+                control={control}
+                options={[
+                  { value: '1', label: '수입' },
+                  { value: '2', label: '지출' },
+                ]}
+                rules={{ required: '구분을 선택해주세요.' }}
+                onChange={(val) => {
+                  setSelectType(val)
+                }}
+              />
 
-                <CustomSelect<TransactionForm>
-                  name="categoryPk"
-                  control={control}
-                  label="카테고리"
-                  placeholder="선택하세요"
-                  options={categoryOptions}
-                  rules={{ required: '카테고리를 선택해주세요.' }}
-                />
+              <CustomSelect<TransactionForm>
+                name="categoryPk"
+                control={control}
+                label="카테고리"
+                placeholder="선택하세요"
+                options={categoryOptions}
+                rules={{ required: '카테고리를 선택해주세요.' }}
+              />
 
-                <CustomInput
-                  label="금액"
-                  type="text"
-                  inputMode="numeric"
-                  placeholder="ex) 5000, 40000"
-                  {...amountReg}
-                  onChange={(e) => {
-                    let digit = digits(e.target.value)
-                    digit = stripLeadingZeros(digit)
+              <CustomInput
+                label="금액"
+                type="text"
+                inputMode="numeric"
+                placeholder="ex) 5000, 40000"
+                {...amountReg}
+                onChange={(e) => {
+                  let digit = digits(e.target.value)
+                  digit = stripLeadingZeros(digit)
 
-                    e.target.value = digit === '' ? '' : formatComma(digit)
-                    void amountReg.onChange({
-                      ...e,
-                      target: {
-                        ...e.target,
-                        value: digit,
-                      },
-                    })
-                  }}
-                  error={errors.amount?.message}
-                />
+                  e.target.value = digit === '' ? '' : formatComma(digit)
+                  void amountReg.onChange({
+                    ...e,
+                    target: {
+                      ...e.target,
+                      value: digit,
+                    },
+                  })
+                }}
+                error={errors.amount?.message}
+              />
+            </div>
+            <div className="flex items-center justify-between mt-4">
+              <div>
+                {isMode === 'update' && (
+                  <CustomButton
+                    buttonType="delete"
+                    htmlType="button"
+                    onClick={onDelete}
+                  >
+                    삭제
+                  </CustomButton>
+                )}
               </div>
-            )}
-            <div className="flex justify-end mt-4">
-              <CustomButton buttonType="init" htmlType="submit" />
-              <CustomButton
-                buttonType="delete"
-                htmlType="button"
-                onClick={onClose}
-              >
-                취소
-              </CustomButton>
+              <div className="flex gap-2">
+                <CustomButton
+                  buttonType="modify"
+                  htmlType="button"
+                  onClick={onClose}
+                >
+                  취소
+                </CustomButton>
+                <CustomButton buttonType="init" htmlType="submit" />
+              </div>
             </div>
           </form>
         </div>

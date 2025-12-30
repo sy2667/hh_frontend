@@ -22,3 +22,21 @@ export const createTransaction = async (form: TransactionForm) => {
 
   return res.data
 }
+
+export const getTransaction = async (pk: string) => {
+  const { data } = await api.get(`/transactions/${pk}`)
+  return data
+}
+
+export const updateTransaction = async (
+  trPk: string,
+  form: TransactionForm,
+) => {
+  const { data } = await api.put(`/transactions/${trPk}`, form)
+  return data
+}
+
+export const deleteTransaction = async (trPk: string) => {
+  const { data } = await api.delete(`/transactions/${trPk}`)
+  return data
+}

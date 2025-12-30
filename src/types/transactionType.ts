@@ -1,13 +1,21 @@
 export interface TransactionForm {
-  categoryPk: number
+  categoryPk: string
   transactionType: string
-  amount: string
+  amount: number
   description: string
   transactionDate: string
 }
+
+export interface TransactionModalForm {
+  transactionPk: string
+  transactionType: string
+  amount: string
+  description: string
+}
+
 export interface TransactionRes {
-  transactionPk: number
-  categoryPk: number
+  transactionPk: string
+  categoryPk: string
   categoryName: string
   transactionType: string
   amount: number
@@ -29,9 +37,9 @@ export interface monthTrType {
 }
 
 export const defaultValues: TransactionForm = {
-  categoryPk: 1,
+  categoryPk: '1',
   transactionType: '1',
-  amount: '0',
+  amount: 0,
   description: '',
   transactionDate: '',
 }
