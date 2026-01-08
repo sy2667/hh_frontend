@@ -45,8 +45,8 @@ export default function CategoryDetailModal({
     if (!caPk) return
 
     const run = async () => {
-      const res: CategoryList = await getCategory(selectType)
-      const categoryReq: CategoryReq[] = res.CategoryList ?? []
+      const res = await getCategory(selectType)
+      const categoryReq: CategoryReq[] = res ?? []
 
       const data = categoryReq.find((c) => c.categoryPk === caPk)
       if (!data) return
@@ -61,6 +61,17 @@ export default function CategoryDetailModal({
     void run()
   }, [isOpen, caPk, selectType, form])
 
+  useEffect(() => {
+    if (isOpen) return
+
+    form.setValues({
+      categoryPk: '',
+      categoryName: '',
+      categoryType: selectType,
+    })
+    form.clearErrors()
+  }, [isOpen, selectType])
+
   if (!isOpen) return null
 
   const submit = async (data: CategoryForm) => {
@@ -73,13 +84,22 @@ export default function CategoryDetailModal({
       }
 
       onSuccess()
-      onClose()
+      handleClose()
     } catch (e) {
       console.error(e)
     }
   }
 
   const onDelete = async () => {}
+  const handleClose = () => {
+    form.setValues({
+      categoryPk: '',
+      categoryName: '',
+      categoryType: selectType, // 현재 선택 타입 유지하고 싶으면
+    })
+    form.clearErrors()
+    onClose()
+  }
 
   return (
     <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/40">
@@ -89,7 +109,7 @@ export default function CategoryDetailModal({
             <div className="text-base font-semibold">
               카테고리 {mode === 'init' ? '추가' : '수정'}
             </div>
-            <Button size="xs" radius="lg" color="red" onClick={onClose}>
+            <Button size="xs" radius="lg" color="red" onClick={handleClose}>
               닫기
             </Button>
           </div>
@@ -127,23 +147,21 @@ export default function CategoryDetailModal({
                   추가
                 </Button>
               ) : (
-                <>
+                <div className="flex gap-2">
                   <Button
                     type="button"
                     size="xs"
                     radius="lg"
+                    color="gray"
                     onClick={onDelete}
                   >
                     삭제
                   </Button>
-                  <Button type="submit" size="xs" radius="lg">
+                  <Button type="submit" size="xs" radius="lg" color="yellow">
                     수정
                   </Button>
-                </>
+                </div>
               )}
-              <Button type="submit" size="xs" radius="lg">
-                {mode === 'init' ? '추가' : '수정'}
-              </Button>
             </div>
           </div>
         </form>

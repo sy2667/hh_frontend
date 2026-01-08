@@ -14,11 +14,12 @@ export default function CategoryModal({ isOpen, onClose }: Props) {
   const [modalOpen, setModalOpen] = useState<boolean>(false)
   const [categories, setCategories] = useState<CategoryReq[]>([])
   const [mode, setMode] = useState<string>('init')
+  const [caPk, setCaPk] = useState<string>('')
 
   const callCategory = useCallback(async () => {
     try {
-      const res: CategoryList = await getCategory(selectType)
-      setCategories(res.CategoryList ?? [])
+      const res: CategoryReq[] = await getCategory(selectType)
+      setCategories(res ?? [])
     } catch (e) {
       console.error(e)
       setCategories([])
@@ -27,11 +28,13 @@ export default function CategoryModal({ isOpen, onClose }: Props) {
 
   useEffect(() => {
     if (!isOpen) return
-    callCategory()
+    void callCategory()
   }, [isOpen, callCategory])
 
   if (!isOpen) return null
-  const onSuccess = () => {}
+  const onSuccess = () => {
+    void callCategory()
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
@@ -78,9 +81,24 @@ export default function CategoryModal({ isOpen, onClose }: Props) {
               categories.map((c) => (
                 <li
                   key={c.categoryPk}
-                  className="rounded-lg bg-gray-50 px-3 py-2 text-sm text-gray-900"
+                  className="
+                    flex items-center justify-between
+                    rounded-lg border border-gray-200
+                    bg-white px-3 py-2
+                    text-sm text-gray-900
+                    shadow-sm
+                    hover:bg-gray-50 hover:shadow
+                    cursor-pointer
+                    transition
+                  "
+                  onClick={() => {
+                    setCaPk(c.categoryPk)
+                    setModalOpen(true)
+                    setMode('update')
+                  }}
                 >
-                  {c.categoryName}
+                  <span>{c.categoryName}</span>
+                  <span className="text-xs text-gray-400">›</span>
                 </li>
               ))
             ) : (
@@ -99,11 +117,14 @@ export default function CategoryModal({ isOpen, onClose }: Props) {
       <CategoryDetailModal
         isOpen={modalOpen}
         onClose={() => {
+          setMode('init')
+          setCaPk('')
           setModalOpen(false)
         }}
         onSuccess={onSuccess}
         mode={mode}
         selectType={selectType}
+        caPk={caPk}
       />
     </div>
   )
