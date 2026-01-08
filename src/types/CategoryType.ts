@@ -4,6 +4,7 @@ export interface CategoryReq {
 }
 
 export interface CategoryForm {
+  categoryPk?: string
   categoryName: string
   categoryType: string
 }

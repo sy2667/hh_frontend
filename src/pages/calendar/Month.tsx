@@ -15,7 +15,6 @@ const Month = () => {
 
   const handleSelectMonth = (y: number, monthIndex: number) => {
     setSelectedMonthIndex(monthIndex)
-    console.log(`${y}년 ${monthIndex + 1}월 클릭`)
   }
 
   return (

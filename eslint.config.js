@@ -30,7 +30,7 @@ export default defineConfig([
     },
 
     rules: {
-      'prettier/prettier': 'warn',
+      'prettier/prettier': 'off',
       'react-refresh/only-export-components': 'off',
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': 'error',

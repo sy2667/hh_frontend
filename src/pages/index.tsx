@@ -4,6 +4,7 @@ import CalendarPages from './calendar'
 import LoginPages from './login'
 import ProtectedRoute from '../components/ProtectedRoute'
 import NaverCallBack from './naver/NaverCallback'
+import SettingPage from '@pages/user'
 // import ChartPages from './chart'
 
 const Pages = () => {
@@ -18,6 +19,15 @@ const Pages = () => {
         element={
           <ProtectedRoute>
             <Navigate to="/calendar/day" replace />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/user/*"
+        element={
+          <ProtectedRoute>
+            <SettingPage />
           </ProtectedRoute>
         }
       />
