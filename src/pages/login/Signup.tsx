@@ -13,8 +13,6 @@ import { useAuth } from '@/contexts/AuthContext.tsx'
 
 const Signup = () => {
   const navigate = useNavigate()
-  const setUser = useAuthStore((s) => s.setUser)
-  const { setLoginSuccess } = useAuth()
 
   const {
     register,
@@ -36,10 +34,8 @@ const Signup = () => {
     }
 
     try {
-      await joinWithHome(payload)
-      const user = await fetchMe()
-      setUser(user)
-      setLoginSuccess(true)
+      const { user, accessToken } = await joinWithHome(payload)
+      useAuthStore.getState().setAuth(user, accessToken)
 
       navigate('/calendar/day')
     } catch (e) {
