@@ -1,17 +1,17 @@
-import './App.css'
+import styles from '@css/App.module.css'
 import Navigation from './components/Navigation'
 import { APP_TITLE } from './constants/navigation'
 import Pages from './pages'
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-3xl mx-auto px-4 py-6">
-        <h1 className="text-2xl font-bold mb-4">{APP_TITLE}</h1>
+    <div className={styles.appRoot}>
+      <div className={styles.container}>
+        <h1 className={styles.title}>{APP_TITLE}</h1>
 
         <Navigation />
 
-        <main className="mt-4 bg-white dark:bg-gray-800 rounded-lg p-4 shadow">
+        <main className={styles.mainCard}>
           <Pages />
         </main>
       </div>

@@ -1,5 +1,5 @@
-// src/components/common/CommonButton.tsx
 import React from 'react'
+import { Button } from '@mantine/core'
 
 type ButtonType = 'init' | 'delete' | 'edit' | 'modify'
 type HtmlButtonType = 'button' | 'submit' | 'reset'
@@ -11,11 +11,18 @@ interface CustomButtonProp {
   children?: React.ReactNode
 }
 
-const typeClassMap: Record<ButtonType, string> = {
-  init: 'bg-blue-400 hover:bg-blue-600 text-white',
-  delete: 'bg-red-400 hover:bg-red-600 text-white',
-  edit: 'bg-yellow-400 hover:bg-yellow-500 text-gray-900',
-  modify: 'bg-gray-400 hover:bg-gray-500 text-white',
+const typeColorMap: Record<ButtonType, string> = {
+  init: 'blue',
+  delete: 'red',
+  edit: 'yellow',
+  modify: 'gray',
+}
+
+const typeVariantMap: Record<ButtonType, 'filled' | 'light'> = {
+  init: 'filled',
+  delete: 'filled',
+  edit: 'light',
+  modify: 'light',
 }
 
 const typeLabelMap: Record<ButtonType, string> = {
@@ -31,22 +38,20 @@ const CustomButton: React.FC<CustomButtonProp> = ({
   htmlType = 'button',
   children,
 }) => {
-  const colorClass = typeClassMap[buttonType]
-  const label = children ?? typeLabelMap[buttonType] // children 없으면 기본 텍스트 사용
+  const label = children ?? typeLabelMap[buttonType]
 
   return (
-    <button
-      onClick={onClick}
+    <Button
       type={htmlType}
-      className={`
-        inline-flex items-center justify-center m-1
-        px-4 py-2 rounded-md text-sm font-medium
-        shadow-sm transition
-        ${colorClass}
-      `}
+      onClick={onClick}
+      color={typeColorMap[buttonType]}
+      variant={typeVariantMap[buttonType]}
+      radius="md"
+      size="sm"
+      style={{ margin: 4 }}
     >
       {label}
-    </button>
+    </Button>
   )
 }
 

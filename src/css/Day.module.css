@@ -1,0 +1,220 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.section {
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px;
+}
+
+.subLabel {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.dateText {
+  margin-top: 4px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.addBtn {
+  border-radius: 10px;
+  background: #f9fafb;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+}
+
+.addBtn:hover {
+  background: #f3f4f6;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  padding: 0 16px 16px;
+}
+
+.summaryCard {
+  border-radius: 14px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  padding: 12px;
+  min-width: 0;
+}
+
+.summaryTitle {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.summaryValue {
+  margin-top: 6px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.divider {
+  height: 1px;
+  background: #e5e7eb;
+}
+
+.content {
+  padding: 16px;
+}
+
+.listHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.listTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.sortBtn {
+  font-size: 14px;
+  color: #6b7280;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.sortBtn:hover {
+  color: #374151;
+}
+
+.emptyBox {
+  border-radius: 14px;
+  border: 1px dashed #d1d5db;
+  padding: 20px;
+  text-align: center;
+}
+
+.emptyTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.emptyDesc {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  padding: 12px;
+  cursor: pointer;
+  min-width: 0;
+}
+
+.item:hover {
+  background: #f9fafb;
+}
+
+.itemLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: #f3f4f6;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.income {
+  color: #3b82f6;
+}
+
+.expense {
+  color: #ef4444;
+}
+
+.descWrap {
+  min-width: 0;
+}
+
+.desc {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60vw;
+}
+
+.category {
+  font-size: 12px;
+  color: #6b7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.amount {
+  font-size: 14px;
+  font-weight: 800;
+  color: #111827;
+  white-space: nowrap;
+}
+
+/* 모바일: 요약 3칸 → 1칸(세로) */
+@media (max-width: 640px) {
+  .summaryGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .desc {
+    max-width: 44vw;
+  }
+}

@@ -1,8 +1,14 @@
 import { api } from '../client'
-import type { UserRes, SignForm, LoginForm } from '@app-types/userType.ts'
+import type {
+  UserRes,
+  SignForm,
+  LoginForm,
+  LoginRes,
+  TokenRes,
+} from '@app-types/userType.ts'
 
 export const loginWithNaver = async (code: string, state: string) => {
-  const res = await api.post<UserRes>('/users/login/naver', {
+  const res = await api.post<LoginRes>('/users/login/naver', {
     code,
     state,
   })
@@ -10,13 +16,13 @@ export const loginWithNaver = async (code: string, state: string) => {
 }
 
 export const joinWithHome = async (form: SignForm) => {
-  const res = await api.post<SignForm>('/users/login/joinWithHome', form)
+  const res = await api.post<LoginRes>('/users/login/joinWithHome', form)
 
   return res.data
 }
 
 export const loginWithHome = async (form: LoginForm) => {
-  const res = await api.post<LoginForm>('/users/login/loginWithHome', form)
+  const res = await api.post<LoginRes>('/users/login/loginWithHome', form)
 
   return res.data
 }
@@ -28,4 +34,9 @@ export const fetchMe = async () => {
 
 export const logout = async () => {
   await api.post('/users/logout')
+}
+
+export const refreshToken = async () => {
+  const res = await api.post<TokenRes>('/users/auth/refresh')
+  return res.data
 }

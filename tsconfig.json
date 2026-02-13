@@ -13,7 +13,8 @@
       "@pages/*": ["src/pages/*"],
       "@api/*": ["src/api/*"],
       "@app-types/*": ["src/types/*"],
-      "@hooks/*": ["src/hooks/*"]
+      "@hooks/*": ["src/hooks/*"],
+      "@css/*": ["src/css/*"]
     },
     "noUnusedLocals": false,
     "noUnusedParameters": false,

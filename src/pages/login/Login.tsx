@@ -4,15 +4,13 @@ import { useEffect, useRef, useCallback } from 'react'
 import { useAuth } from '../../contexts/AuthContext.tsx'
 import NaverLoginButton from '@components/NaverLoginButton.tsx'
 import { useNavigate } from 'react-router-dom'
-import { loginWithNaver, fetchMe, loginWithHome } from '@api/user/user'
+import { loginWithNaver, loginWithHome } from '@api/user/user'
 import { useAuthStore } from '@hooks/common/useAuthStore'
 import { type LoginForm } from '@app-types/userType'
 import { useForm } from 'react-hook-form'
 
 const Login = () => {
-  const { setLoginSuccess } = useAuth()
   const navigate = useNavigate()
-  const setUser = useAuthStore((s) => s.setUser)
 
   const naverLoggingRef = useRef(false)
   const APP_ORIGIN = import.meta.env.VITE_APP_ORIGIN
@@ -28,18 +26,11 @@ const Login = () => {
 
   const onLoginSuccess = useCallback(
     async (code: string, state: string) => {
-      try {
-        await loginWithNaver(code, state)
-        const user = await fetchMe()
-        setUser(user)
-        setLoginSuccess(true)
-        navigate('/calendar/day')
-      } catch (err) {
-        console.error('네이버 로그인 실패', err)
-        naverLoggingRef.current = false
-      }
+      const { user, accessToken } = await loginWithNaver(code, state)
+      useAuthStore.getState().setAuth(user, accessToken)
+      navigate('/calendar/day')
     },
-    [setUser, setLoginSuccess, navigate],
+    [navigate],
   )
 
   useEffect(() => {
@@ -67,20 +58,13 @@ const Login = () => {
   }, [onLoginSuccess, APP_ORIGIN])
 
   const submit = async (data: LoginForm) => {
-    if (data.email === 'admin' && data.password === 'admin') {
-      setLoginSuccess(true)
-    } else {
-      const loginForm: LoginForm = {
-        email: data.email,
-        password: data.password,
-      }
-      await loginWithHome(loginForm)
-
-      const user = await fetchMe()
-      setUser(user)
-      setLoginSuccess(true)
-      navigate('/calendar/day')
+    const loginForm: LoginForm = {
+      email: data.email,
+      password: data.password,
     }
+    const { user, accessToken } = await loginWithHome(loginForm)
+    useAuthStore.getState().setAuth(user, accessToken)
+    navigate('/calendar/day')
   }
 
   return (

@@ -5,44 +5,47 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import { fetchMe } from '@api/user/user'
+import { fetchMe, refreshToken } from '@api/user/user'
 import { useAuthStore } from '@hooks/common/useAuthStore'
 
 interface AuthContextType {
-  loginSuccess: boolean
-  setLoginSuccess: (success: boolean) => void
   bootstrapping: boolean
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [loginSuccess, setLoginSuccess] = useState<boolean>(false)
-  const [bootstrapping, setBootstrapping] = useState<boolean>(true)
+  const [bootstrapping, setBootstrapping] = useState(true)
+  const once = useRef(false)
 
   const setUser = useAuthStore((s) => s.setUser)
-  const once = useRef(false)
+  const setAccessToken = useAuthStore((s) => s.setAccessToken)
+  const clearAuth = useAuthStore((s) => s.clearAuth)
 
   useEffect(() => {
     if (once.current) return
     once.current = true
     ;(async () => {
       try {
-        const user = await fetchMe()
-        setUser(user)
-        setLoginSuccess(true)
+        if (useAuthStore.getState().loggedOut) {
+          return
+        }
+
+        const { accessToken } = await refreshToken()
+        setAccessToken(accessToken)
+
+        const me = await fetchMe()
+        setUser(me)
       } catch {
-        setLoginSuccess(false)
+        clearAuth()
       } finally {
         setBootstrapping(false)
       }
     })()
-  }, [setUser])
+  }, [setAccessToken, setUser, clearAuth])
 
   return (
-    <AuthContext.Provider
-      value={{ loginSuccess, setLoginSuccess, bootstrapping }}
-    >
+    <AuthContext.Provider value={{ bootstrapping }}>
       {children}
     </AuthContext.Provider>
   )
@@ -50,8 +53,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
 export const useAuth = () => {
   const ctx = useContext(AuthContext)
-  if (!ctx) {
-    throw new Error('useAuth must be used inside AuthProvider')
-  }
+  if (!ctx) throw new Error('useAuth must be used inside AuthProvider')
   return ctx
 }

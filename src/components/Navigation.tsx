@@ -1,77 +1,79 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { NAVIGATION_ITEMS } from '../constants/navigation'
-import CustomButton from './CustomButton'
-import { useAuth } from '../contexts/AuthContext'
 import { useAuthStore } from '@hooks/common/useAuthStore'
+import { logout } from '@api/user/user.ts'
+import { Paper, Group, Button, Text } from '@mantine/core'
 
 const Navigation = () => {
   const location = useLocation()
-  const { loginSuccess, setLoginSuccess } = useAuth()
-  const clearAuth = useAuthStore((s) => s.clearAuth)
-
-  const isActive = (path: string) => location.pathname === path
   const navigate = useNavigate()
-  const authClick = () => {
-    if (loginSuccess) {
-      setLoginSuccess(false)
-      clearAuth()
-      console.log('로그아웃')
-    } else {
-      navigate('/login')
-      console.log('로그인')
-    }
-  }
 
   const user = useAuthStore((s) => s.user)
   const nickname = user?.nickName
+  const isLoggedIn = !!user
+
+  const isActive = (path: string) => location.pathname === path
+
+  const authClick = async () => {
+    if (isLoggedIn) {
+      try {
+        await logout()
+      } finally {
+        useAuthStore.getState().markLoggedOut()
+        navigate('/login')
+      }
+      return
+    }
+
+    navigate('/login')
+  }
 
   return (
-    <nav
-      className="
-      bg-gray-100
-      dark:bg-gray-800
-      theme-blue:bg-theme-blue-800
-      theme-green:bg-theme-green-800
-      p-4 rounded-lg mb-6
-    "
-    >
-      <div className="flex justify-between items-center">
-        <ul className="flex gap-4">
-          {NAVIGATION_ITEMS.map(({ path, label, icon }) => (
-            <li key={path}>
-              <Link
-                to={path}
-                className={`
-                px-4 py-2 rounded-lg font-medium transition-all inline-block
-                ${
-                  isActive(path)
-                    ? 'bg-blue-500 text-white shadow-lg'
-                    : 'text-gray-700 dark:text-gray-300 theme-blue:text-theme-blue-100 theme-green:text-theme-green-100 hover:bg-gray-200 dark:hover:bg-gray-700 theme-blue:hover:bg-theme-blue-700 theme-green:hover:bg-theme-green-700'
-                }
-              `}
-              >
-                <span className="mr-2">{icon}</span>
-                {label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-        <div>
-          {loginSuccess && nickname && (
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+    <Paper withBorder radius="lg" p="md" mb="md" bg="gray.0">
+      <Group justify="space-between" align="center">
+        {/* 왼쪽 메뉴 */}
+        <Group gap="sm">
+          {isLoggedIn && nickname && (
+            <Text size="sm" fw={600} c="dimmed">
               {nickname} 님!
-            </span>
+            </Text>
           )}
 
-          <CustomButton
-            buttonType={loginSuccess ? 'delete' : 'init'}
+          <Button
             onClick={authClick}
+            color={isLoggedIn ? 'red' : 'blue'}
+            variant={isLoggedIn ? 'filled' : 'light'}
+            radius="md"
           >
-            {loginSuccess ? '로그아웃' : '로그인'}
-          </CustomButton>
-        </div>
-      </div>
-    </nav>
+            {isLoggedIn ? '로그아웃' : '로그인'}
+          </Button>
+        </Group>
+
+        {/* 오른쪽 메뉴 */}
+        <Group gap="sm">
+          {NAVIGATION_ITEMS.filter((item) => item.show) // 🔥 show가 false면 제외
+            .map(({ path, label, icon: Icon }) => {
+              const active = isActive(path)
+
+              return (
+                <Button
+                  key={path}
+                  component={Link}
+                  to={path}
+                  variant={active ? 'filled' : 'subtle'}
+                  color={active ? 'blue' : 'gray'}
+                  radius="md"
+                  leftSection={
+                    Icon ? <Icon size={18} stroke={1.8} /> : undefined
+                  }
+                >
+                  {label}
+                </Button>
+              )
+            })}
+        </Group>
+      </Group>
+    </Paper>
   )
 }
 

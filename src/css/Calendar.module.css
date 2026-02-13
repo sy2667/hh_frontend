@@ -1,0 +1,13 @@
+.dayCell {
+  transition: transform 120ms ease, box-shadow 120ms ease, background-color 120ms ease, border-color 120ms ease;
+}
+
+.dayCell:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+}
+
+.dayCell:active {
+  transform: scale(0.98);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}

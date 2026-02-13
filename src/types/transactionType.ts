@@ -35,6 +35,21 @@ export interface monthTrType {
   income: number
   expense: number
 }
+export interface TransactionMonthType {
+  month: number
+  totalIncome: number
+  totalExpense: number
+  totalBalance: number
+  totalCount: number
+}
+
+export interface MonthTransactionRes {
+  totalIncome: number
+  totalExpense: number
+  totalBalance: number
+  totalCount: number
+  months: TransactionMonthType[]
+}
 
 export const defaultValues: TransactionForm = {
   categoryPk: '1',
@@ -42,4 +57,16 @@ export const defaultValues: TransactionForm = {
   amount: 0,
   description: '',
   transactionDate: '',
+}
+
+export interface CategorySlice {
+  categoryPk: number
+  categoryName: string
+  amount: number
+}
+
+export interface MonthCategoryPieRes {
+  month: number
+  totalExpense: number
+  categories: CategorySlice[]
 }

@@ -1,7 +1,10 @@
 import { api } from '../client'
 import type {
+  MonthCategoryPieRes,
+  MonthTransactionRes,
   TransactionForm,
   TransactionListRes,
+  TransactionMonthType,
 } from '@app-types/transactionType'
 
 export const searchTransactionToMonth = async (start: string, end: string) => {
@@ -26,6 +29,22 @@ export const createTransaction = async (form: TransactionForm) => {
 export const getTransaction = async (pk: string) => {
   const { data } = await api.get(`/transactions/${pk}`)
   return data
+}
+
+export const getMonthCategoryPie = async (year: string, month: number) => {
+  const res = await api.get<MonthCategoryPieRes>('/transactions/month/pie', {
+    params: { year, month },
+  })
+  return res.data
+}
+
+export const getMonthTransaction = async (year: string) => {
+  const res = await api.get<MonthTransactionRes>('/transactions/month', {
+    params: {
+      year: year,
+    },
+  })
+  return res.data
 }
 
 export const updateTransaction = async (

@@ -34,3 +34,12 @@ export const defaultValues: ValidateForm = {
   passwordConfirm: '',
   nickname: '',
 }
+
+export type LoginRes = {
+  user: UserRes
+  accessToken: string
+}
+
+export type TokenRes = {
+  accessToken: string
+}

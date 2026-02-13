@@ -1,5 +1,18 @@
 // src/pages/calendar/Day.tsx
 import { useState, useEffect, useCallback } from 'react'
+import {
+  Stack,
+  Card,
+  Group,
+  Box,
+  Text,
+  Button,
+  SimpleGrid,
+  Divider,
+  Badge,
+  UnstyledButton,
+  Select,
+} from '@mantine/core'
 import Calendar from '@components/Calendar'
 import { searchTransactionToMonth } from '@api/transaction/transaction'
 import type {
@@ -7,6 +20,8 @@ import type {
   monthTrType,
 } from '@/types/transactionType.ts'
 import Modal from '@components/Modal'
+import TotalHeader from '@components/TotalHeader.tsx'
+import CalendarModeSelect from '@components/CalendarMondeSelect.tsx'
 
 const Day = () => {
   const [month, setMonth] = useState(() => {
@@ -23,6 +38,7 @@ const Day = () => {
     TransactionListRes['transactions']
   >([])
   const [selectedTrPk, setSelectedTrPk] = useState<string>('')
+  const [totalBalance, setTotalBalance] = useState<number>(0)
 
   const pad2 = (num: number) => String(num).padStart(2, '0')
   const toYmd = (date: Date) =>
@@ -62,17 +78,19 @@ const Day = () => {
 
       setMonthMap(map)
       setTransactions(res.transactions)
+      setTotalBalance(res.totalBalance)
     } catch (e) {
       console.error('조회 에러', e)
     }
   }, [selectedDate])
 
   useEffect(() => {
-    callData()
+    void callData()
   }, [callData])
 
   const selectedYmd = toYmd(selectedDate)
 
+  // 하루 Total 금액
   const dayTx = transactions.filter(
     (tr) => tr.transactionDate.slice(0, 10) === selectedYmd,
   )
@@ -90,156 +108,173 @@ const Day = () => {
   const formatWon = (n: number) => `${n.toLocaleString('ko-KR')}원`
 
   return (
-    <div className="space-y-4">
-      <Calendar
-        month={month}
-        selectedDate={selectedDate}
-        dayMap={monthMap}
-        onChangeMonth={(nextMonth) => {
-          setMonth(nextMonth)
-          setSelectedDate(nextMonth)
-        }}
-        onSelectDate={(date) => {
-          setSelectedDate(date)
-        }}
-      />
-
-      {/* 아래는 그냥 선택된 날짜가 뭔지 확인용 UI */}
-      <div className="mt-4">
-        {/* 일별 상세 영역 */}
-        <section className="rounded-2xl bg-white shadow-sm ring-1 ring-gray-200">
-          {/* 헤더 */}
-          <div className="flex items-start justify-between gap-4 p-4 sm:p-5">
-            <div>
-              <div className="text-sm text-gray-500">선택한 날짜</div>
-              <div className="mt-1 text-lg font-semibold text-gray-900">
+    <Stack gap="md">
+      <Box w="100%" maw={980} mx="auto">
+        <Group justify="space-between" align="center" mt="md" mb="sm">
+          <TotalHeader type="month" total={totalBalance} />
+          <CalendarModeSelect value="day" />
+        </Group>
+        <Calendar
+          month={month}
+          selectedDate={selectedDate}
+          dayMap={monthMap}
+          onChangeMonth={(nextMonth) => {
+            setMonth(nextMonth)
+            setSelectedDate(nextMonth)
+          }}
+          onSelectDate={(date) => setSelectedDate(date)}
+        />
+        <Card mt="md" radius="xl" withBorder shadow="sm" p={0}>
+          <Group justify="space-between" align="flex-start" p="md">
+            <Box>
+              <Text fw={700} size="sm">
+                선택한 날짜
+              </Text>
+              <Text mt={4} fw={700} size="lg">
                 {toYmd(selectedDate)}
-              </div>
-            </div>
+              </Text>
+            </Box>
 
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                className="rounded-lg bg-gray-50 px-3 py-2 text-sm font-medium text-gray-700 ring-1 ring-gray-200 hover:bg-gray-100"
-                onClick={() => {
-                  setModalMode('init')
-                  setIsModalOpen(true)
-                  setSelectedTrPk('')
-                }}
-              >
-                + 입력
-              </button>
-            </div>
-          </div>
+            <Button
+              variant="light"
+              radius="md"
+              onClick={() => {
+                setModalMode('init')
+                setIsModalOpen(true)
+                setSelectedTrPk('')
+              }}
+            >
+              + 입력
+            </Button>
+          </Group>
 
-          {/* 요약 */}
-          <div className="grid grid-cols-3 gap-2 px-4 pb-4 sm:px-5">
-            <div className="rounded-xl bg-gray-50 p-3 ring-1 ring-gray-200">
-              <div className="text-xs text-gray-500">수입</div>
-              <div className="mt-1 text-base font-semibold text-gray-900">
-                {formatWon(incomeSum)}
-              </div>
-            </div>
+          {/* Summary */}
+          <Box px="md" pb="md">
+            <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="sm">
+              <Card radius="lg" withBorder p="sm" bg="gray.0">
+                <Text size="xs" c="dimmed">
+                  수입
+                </Text>
+                <Text mt={6} fw={700}>
+                  {formatWon(incomeSum)}
+                </Text>
+              </Card>
 
-            <div className="rounded-xl bg-gray-50 p-3 ring-1 ring-gray-200">
-              <div className="text-xs text-gray-500">지출</div>
-              <div className="mt-1 text-base font-semibold text-gray-900">
-                {formatWon(expenseSum)}
-              </div>
-            </div>
+              <Card radius="lg" withBorder p="sm" bg="gray.0">
+                <Text size="xs" c="dimmed">
+                  지출
+                </Text>
+                <Text mt={6} fw={700}>
+                  {formatWon(expenseSum)}
+                </Text>
+              </Card>
 
-            <div className="rounded-xl bg-gray-50 p-3 ring-1 ring-gray-200">
-              <div className="text-xs text-gray-500">합계</div>
-              <div className="mt-1 text-base font-semibold text-gray-900">
-                {formatWon(total)}
-              </div>
-            </div>
-          </div>
+              <Card radius="lg" withBorder p="sm" bg="gray.0">
+                <Text size="xs" c="dimmed">
+                  합계
+                </Text>
+                <Text mt={6} fw={700}>
+                  {formatWon(total)}
+                </Text>
+              </Card>
+            </SimpleGrid>
+          </Box>
 
-          {/* 구분선 */}
-          <div className="h-px bg-gray-200" />
+          <Divider />
 
-          {/* 리스트 */}
-          <div className="p-4 sm:p-5">
-            <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-gray-900">거래 내역</h3>
-              <button
-                type="button"
-                className="text-sm text-gray-500 hover:text-gray-700"
-              >
+          {/* List */}
+          <Box p="md">
+            <Group justify="space-between" mb="sm">
+              <Text fw={700} size="sm">
+                거래 내역
+              </Text>
+
+              {/*<Button variant="subtle" size="xs" c="dimmed">
                 정렬
-              </button>
-            </div>
+              </Button>*/}
+            </Group>
 
             {dayTx.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-gray-300 p-6 text-center">
-                <div className="text-sm font-medium text-gray-900">
+              <Card
+                withBorder
+                radius="lg"
+                p="xl"
+                style={{ borderStyle: 'dashed' }}
+              >
+                <Text fw={700} ta="center">
                   아직 등록된 내역이 없어요
-                </div>
-                <div className="mt-1 text-sm text-gray-500">
+                </Text>
+                <Text size="sm" c="dimmed" ta="center" mt={6}>
                   + 입력을 눌러 수입/지출을 추가해보세요.
-                </div>
-              </div>
+                </Text>
+              </Card>
             ) : (
-              <ul className="space-y-2">
+              <Stack gap="xs">
                 {dayTx.map((tr) => {
                   const isIncome = tr.transactionType === '1'
-                  const typeColorClass = isIncome
-                    ? 'text-blue-500'
-                    : 'text-red-500'
 
                   return (
-                    <li
+                    <UnstyledButton
                       key={tr.transactionPk}
-                      className="flex items-center justify-between rounded-xl bg-white p-3 ring-1 ring-gray-200 hover:bg-gray-50"
-                      tabIndex={0}
                       onClick={() => {
                         setSelectedTrPk(String(tr.transactionPk))
                         setModalMode('update')
                         setIsModalOpen(true)
                       }}
+                      style={{ width: '100%' }}
                     >
-                      <div className="flex items-center gap-3">
-                        <span
-                          className={`inline-flex items-center rounded-full bg-gray-100 px-2 py-1 text-xs font-semibold ${typeColorClass}`}
-                        >
-                          {isIncome ? '수입' : '지출'}
-                        </span>
+                      <Card withBorder radius="lg" p="sm">
+                        <Group justify="space-between" wrap="nowrap">
+                          <Group gap="sm" wrap="nowrap" style={{ minWidth: 0 }}>
+                            <Badge
+                              variant="light"
+                              color={isIncome ? 'blue' : 'red'}
+                              radius="xl"
+                            >
+                              {isIncome ? '수입' : '지출'}
+                            </Badge>
 
-                        <div>
-                          <div className="text-sm font-medium text-gray-900">
-                            {tr.description}
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            {tr.categoryName ?? '카테고리'}
-                          </div>
-                        </div>
-                      </div>
+                            <Box style={{ minWidth: 0 }}>
+                              <Text fw={600} size="sm" lineClamp={1}>
+                                {tr.description}
+                              </Text>
+                              <Text size="xs" c="dimmed" lineClamp={1}>
+                                {tr.categoryName ?? '카테고리'}
+                              </Text>
+                            </Box>
+                          </Group>
 
-                      <div className="text-sm font-semibold text-gray-900">
-                        {isIncome ? '+' : '-'}
-                        {formatWon(tr.amount)}
-                      </div>
-                    </li>
+                          <Text
+                            fw={800}
+                            size="sm"
+                            style={{ whiteSpace: 'nowrap' }}
+                          >
+                            {isIncome ? '+' : '-'}
+                            {formatWon(tr.amount)}
+                          </Text>
+                        </Group>
+                      </Card>
+                    </UnstyledButton>
                   )
                 })}
-              </ul>
+              </Stack>
             )}
-          </div>
-        </section>
-      </div>
-      <Modal
-        date={fullDate}
-        isOpen={isModalOpen}
-        isMode={modalMode}
-        onClose={() => {
-          setIsModalOpen(false)
-          setSelectedTrPk('')
-        }}
-        onSuccess={callData}
-        trPk={selectedTrPk}
-      />
-    </div>
+          </Box>
+        </Card>
+
+        <Modal
+          date={fullDate}
+          isOpen={isModalOpen}
+          isMode={modalMode}
+          onClose={() => {
+            setIsModalOpen(false)
+            setSelectedTrPk('')
+          }}
+          onSuccess={callData}
+          trPk={selectedTrPk}
+        />
+      </Box>
+    </Stack>
   )
 }
 

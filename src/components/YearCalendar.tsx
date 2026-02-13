@@ -1,11 +1,26 @@
-// src/components/YearCalendar.tsx
-import React from 'react'
+import React, { useMemo } from 'react'
+import {
+  Box,
+  Group,
+  Text,
+  ActionIcon,
+  SimpleGrid,
+  Paper,
+  UnstyledButton,
+  Loader,
+  Center,
+} from '@mantine/core'
+import styles from '@css/Calendar.module.css'
+import type { TransactionMonthType } from '@/types/transactionType.ts'
 
 type YearCalendarProps = {
   year: number
   onChangeYear: (nextYear: number) => void
-  onSelectMonth: (year: number, monthIndex: number) => void // monthIndex: 0~11
+  onSelectMonth: (year: number, monthIndex: number) => void
   selectedMonthIndex: number | null
+
+  data: TransactionMonthType[]
+  loading?: boolean
 }
 
 const MONTH_LABELS = [
@@ -23,79 +38,143 @@ const MONTH_LABELS = [
   '12월',
 ]
 
+// 보기 좋게 천단위 콤마
+const formatAmount = (n: number) => n.toLocaleString('ko-KR')
+
 const YearCalendar: React.FC<YearCalendarProps> = ({
   year,
   onChangeYear,
   onSelectMonth,
   selectedMonthIndex,
+  data,
+  loading = false,
 }) => {
-  const prevYear = () => {
-    onChangeYear(year - 1)
-  }
+  const prevYear = () => onChangeYear(year - 1)
+  const nextYear = () => onChangeYear(year + 1)
 
-  const nextYear = () => {
-    onChangeYear(year + 1)
-  }
+  // ✅ month(1~12) -> 데이터 빠르게 찾기 위해 map 만들기
+  const monthMap = useMemo(() => {
+    const map: Record<number, TransactionMonthType> = {}
+    data.forEach((m) => {
+      map[m.month] = m
+    })
+    return map
+  }, [data])
 
   return (
-    <div className="w-full">
-      {/* 상단: 연도 이동 */}
-      <div className="flex items-center justify-between mb-4">
-        <button
-          type="button"
+    <Box w="100%">
+      <Group justify="space-between" align="center" mb={6}>
+        <ActionIcon
+          variant="default"
+          radius="md"
+          size={42}
           onClick={prevYear}
-          className="px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
+          aria-label="prev year"
         >
           ◀
-        </button>
-        <div className="font-semibold text-lg">{year}년</div>
-        <button
-          type="button"
+        </ActionIcon>
+
+        <Text fw={700} size="lg">
+          {year}년
+        </Text>
+
+        <ActionIcon
+          variant="default"
+          radius="md"
+          size={42}
           onClick={nextYear}
-          className="px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
+          aria-label="next year"
         >
           ▶
-        </button>
-      </div>
+        </ActionIcon>
+      </Group>
 
-      {/* 1~12월 그리드 */}
-      <div className="grid grid-cols-3 gap-4">
-        {MONTH_LABELS.map((label, index) => {
-          const isSelected = index === selectedMonthIndex
+      {loading ? (
+        <Center mih={320}>
+          <Loader />
+        </Center>
+      ) : (
+        <SimpleGrid cols={{ base: 2, sm: 3, md: 4 }} spacing={8}>
+          {MONTH_LABELS.map((label, index) => {
+            const isSelected = index === selectedMonthIndex
 
-          return (
-            <button
-              key={index}
-              type="button"
-              onClick={() => onSelectMonth(year, index)}
-              className={`
-                p-3 h-24 w-full text-left border rounded-lg shadow-sm
-                flex flex-col justify-between transition
-                ${
-                  isSelected
-                    ? 'bg-blue-50 border-blue-400'
-                    : 'hover:bg-gray-100 dark:hover:bg-gray-800'
-                }
-              `}
-            >
-              <span className="text-base font-semibold">{label}</span>
+            const month = index + 1
+            const monthData = monthMap[month]
 
-              {/* 나중에 금액 부분 */}
-              <div className="mt-1 text-[11px] leading-tight text-gray-600 dark:text-gray-300">
-                <div className="flex justify-between">
-                  <span>수입</span>
-                  <span className="text-blue-500">+0</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>지출</span>
-                  <span className="text-red-500">-0</span>
-                </div>
-              </div>
-            </button>
-          )
-        })}
-      </div>
-    </div>
+            const income = monthData?.totalIncome ?? 0
+            const expense = monthData?.totalExpense ?? 0
+
+            return (
+              <UnstyledButton
+                key={index}
+                onClick={() => onSelectMonth(year, index)}
+                style={{ width: '100%' }}
+              >
+                <Paper
+                  withBorder
+                  radius="md"
+                  p="sm"
+                  bg={isSelected ? 'blue.0' : 'white'}
+                  className={styles.dayCell}
+                  style={{
+                    width: '100%',
+                    minHeight: 96,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'flex-start',
+                    justifyContent: 'space-between',
+                    overflow: 'hidden',
+                    textAlign: 'left',
+                    borderColor: isSelected
+                      ? 'var(--mantine-color-blue-4)'
+                      : undefined,
+                    transition:
+                      'transform 120ms ease, box-shadow 120ms ease, background-color 120ms ease, border-color 120ms ease',
+                    boxShadow: isSelected
+                      ? '0 6px 16px rgba(0,0,0,0.08)'
+                      : '0 1px 2px rgba(0,0,0,0.04)',
+                  }}
+                >
+                  <Text fw={700} size="sm">
+                    {label}
+                  </Text>
+
+                  <Box w="100%" mt={8}>
+                    <Group justify="space-between" gap={8} wrap="nowrap">
+                      <Text size="xs" c="dimmed">
+                        수입
+                      </Text>
+                      <Text
+                        size="xs"
+                        c="blue"
+                        fw={600}
+                        style={{ whiteSpace: 'nowrap' }}
+                      >
+                        +{formatAmount(income)}
+                      </Text>
+                    </Group>
+
+                    <Group justify="space-between" gap={8} wrap="nowrap">
+                      <Text size="xs" c="dimmed">
+                        지출
+                      </Text>
+                      <Text
+                        size="xs"
+                        c="red"
+                        fw={600}
+                        style={{ whiteSpace: 'nowrap' }}
+                      >
+                        -{formatAmount(expense)}
+                      </Text>
+                    </Group>
+                  </Box>
+                </Paper>
+              </UnstyledButton>
+            )
+          })}
+        </SimpleGrid>
+      )}
+    </Box>
   )
 }
 
